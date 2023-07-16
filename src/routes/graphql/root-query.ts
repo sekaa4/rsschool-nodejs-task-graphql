@@ -3,7 +3,7 @@ import { GraphQLObjectType } from 'graphql';
 import { MemberType } from './member-types/member.js';
 import { MemberListType } from './member-types/members.js';
 import { PostType } from './posts/post.js';
-import { PostTypeList } from './posts/posts.js';
+import { PostListType } from './posts/posts.js';
 import { ProfileType } from './profiles/profile.js';
 import { ProfileListType } from './profiles/profiles.js';
 import { MemberIdNonNullType, UUIDNonNullType } from './types/non-null.js';
@@ -17,7 +17,7 @@ export const RootQueryType = new GraphQLObjectType({
 
   fields: () => ({
     posts: {
-      type: PostTypeList,
+      type: PostListType,
       args: {},
 
       resolve: async () => {
