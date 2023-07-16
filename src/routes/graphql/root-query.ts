@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { GraphQLObjectType, GraphQLError } from 'graphql';
-import { PostTypeList, PostType } from './posts/posts.js';
-import { StringNonNullType } from './types/string.js';
+import { GraphQLObjectType } from 'graphql';
+import { PostType } from './posts/post.js';
+import { PostTypeList } from './posts/posts.js';
+import { UUIDNonNullType } from './types/non-null.js';
 
 const prisma = new PrismaClient();
 
@@ -20,9 +21,9 @@ export const RootQueryType = new GraphQLObjectType({
     },
     post: {
       type: PostType,
-      args: { id: { type: StringNonNullType } },
-      resolve: async (parent, args: { id: string }) => {
-        console.log('PARENT: ', parent);
+      args: { id: { type: UUIDNonNullType } },
+      resolve: async (root, args: { id: string }) => {
+        console.log('PARENT: ', root);
         console.log('ID: ', args);
 
         const post = await prisma.post.findUnique({
@@ -31,9 +32,9 @@ export const RootQueryType = new GraphQLObjectType({
           },
         });
         console.log('POST: ', post);
-        if (post === null) {
-          throw new GraphQLError('Not found');
-        }
+        // if (post === null) {
+        //   throw new GraphQLError('Not found');
+        // }
         // if (post === null) {
         //   throw httpErrors.notFound();
         // }

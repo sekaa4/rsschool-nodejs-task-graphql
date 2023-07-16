@@ -1,10 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { GraphQLObjectType, GraphQLError, GraphQLString } from 'graphql';
-import { title } from 'process';
-import { PostTypeList, PostType } from './posts/posts.js';
-import { StringNonNullType } from './types/string.js';
-import { UUIDType } from './types/uuid.js';
-import { UserType } from './users/users.js';
+import { GraphQLObjectType } from 'graphql';
+import { PostType } from './posts/post.js';
+import { StringNonNullType, UUIDNonNullType } from './types/non-null.js';
+import { Void } from './types/void.js';
 
 const prisma = new PrismaClient();
 
@@ -14,18 +12,24 @@ interface CreatePost {
   authorId: string;
 }
 
+interface UpdatePost {
+  title: string;
+  content: string;
+  id: string;
+}
+
 export const RootMutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     createPost: {
       type: PostType,
       args: {
-        title: { type: GraphQLString },
-        content: { type: GraphQLString },
-        authorId: { type: UUIDType },
+        title: { type: StringNonNullType },
+        content: { type: StringNonNullType },
+        authorId: { type: UUIDNonNullType },
       },
 
-      async resolve(parent, args: CreatePost) {
+      async resolve(root, args: CreatePost) {
         const newPost = await prisma.post.create({
           data: args,
         });
@@ -34,26 +38,41 @@ export const RootMutationType = new GraphQLObjectType({
       },
     },
 
-    // post: {
-    //   type: PostType,
-    //   args: { id: { type: StringNonNullType } },
-    //   resolve: async (parent, args: { id: string }) => {
-    //     console.log('PARENT: ', parent)
-    //     console.log('ID: ', args)
-    //     const post = await prisma.post.findUnique({
-    //       where: {
-    //         id: args.id,
-    //       },
-    //     });
-    //     console.log('POST: ', post)
-    //     // if (post === null) {
-    //     //   throw new GraphQLError('Not found');
-    //     // }
-    //     // if (post === null) {
-    //     //   throw httpErrors.notFound();
-    //     // }
-    //     return post;
-    //   }
-    // }
+    updatePost: {
+      type: PostType,
+      args: {
+        title: { type: StringNonNullType },
+        content: { type: StringNonNullType },
+        id: { type: UUIDNonNullType },
+      },
+
+      async resolve(root, args: UpdatePost) {
+        // const newPost = await prisma.post.create({
+        //   data: args,
+        // });
+        const updatePost = prisma.post.update({
+          where: { id: args.id },
+          data: args,
+        });
+
+        return updatePost;
+      },
+    },
+
+    deletePost: {
+      type: Void,
+      args: {
+        id: { type: UUIDNonNullType }
+      },
+      async resolve(root, args: { id: string }) {
+        const res = await prisma.post.delete({
+          where: {
+            id: args.id,
+          },
+        });
+
+        console.log('DELETE', res);
+      }
+    }
   }),
 });
