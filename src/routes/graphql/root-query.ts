@@ -6,12 +6,15 @@ import { PostType } from './posts/post.js';
 import { PostTypeList } from './posts/posts.js';
 import { ProfileType } from './profiles/profile.js';
 import { ProfileListType } from './profiles/profiles.js';
-import { MemberIDNonNullType, UUIDNonNullType } from './types/non-null.js';
+import { MemberIdNonNullType, UUIDNonNullType } from './types/non-null.js';
+import { UserType } from './users/user.js';
+import { UserTypeList } from './users/users.js';
 
 const prisma = new PrismaClient();
 
 export const RootQueryType = new GraphQLObjectType({
   name: 'Query',
+
   fields: () => ({
     posts: {
       type: PostTypeList,
@@ -19,7 +22,7 @@ export const RootQueryType = new GraphQLObjectType({
 
       resolve: async () => {
         const posts = await prisma.post.findMany();
-        console.log('posts: ', posts);
+        // console.log('posts: ', posts);
         return posts;
       },
     },
@@ -47,7 +50,7 @@ export const RootQueryType = new GraphQLObjectType({
       },
     },
 
-    members: {
+    memberTypes: {
       type: MemberListType,
 
       async resolve() {
@@ -55,10 +58,10 @@ export const RootQueryType = new GraphQLObjectType({
       }
     },
 
-    member: {
+    memberType: {
       type: MemberType,
       args: {
-        id: { type: MemberIDNonNullType }
+        id: { type: MemberIdNonNullType }
       },
 
       async resolve(root, args: { id: string }) {
@@ -93,5 +96,26 @@ export const RootQueryType = new GraphQLObjectType({
         return profile;
       }
     },
+
+    users: {
+      type: UserTypeList,
+      async resolve() {
+        return prisma.user.findMany();
+      }
+    },
+
+    user: {
+      type: UserType,
+      args: { id: { type: UUIDNonNullType } },
+      async resolve(root, args: { id: string }) {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        });
+
+        return user;
+      }
+    }
   }),
 });

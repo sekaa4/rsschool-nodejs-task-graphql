@@ -5,19 +5,19 @@ export type MemberID = 'business' | 'basic'
 const isMemberID = (value: unknown): value is MemberID =>
   (value === 'business' || value === 'basic');
 
-export const MemberIDType = new GraphQLScalarType({
-  name: 'MemberID',
+export const MemberTypeId = new GraphQLScalarType({
+  name: 'MemberTypeId',
 
   serialize(value) {
     if (!isMemberID(value)) {
-      throw new TypeError(`Invalid MemberID.`);
+      throw new TypeError(`Invalid MemberTypeId.`);
     }
     return value;
   },
 
   parseValue(value) {
     if (!isMemberID(value)) {
-      throw new TypeError(`Invalid MemberID.`);
+      throw new TypeError(`Invalid MemberTypeId.`);
     }
     return value;
   },
