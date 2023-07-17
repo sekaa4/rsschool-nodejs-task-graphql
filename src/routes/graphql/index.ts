@@ -27,7 +27,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         schema: rootSchema,
         source: query,
         variableValues: variables,
-
       });
 
       // const post = await fastify.prisma.memberType.findMany();

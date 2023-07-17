@@ -1,9 +1,9 @@
-import { GraphQLScalarType, Kind } from "graphql";
+import { GraphQLScalarType, Kind } from 'graphql';
 
-export type MemberID = 'business' | 'basic'
+export type MemberID = 'business' | 'basic';
 
 const isMemberID = (value: unknown): value is MemberID =>
-  (value === 'business' || value === 'basic');
+  value === 'business' || value === 'basic';
 
 export const MemberTypeId = new GraphQLScalarType({
   name: 'MemberTypeId',
@@ -29,5 +29,5 @@ export const MemberTypeId = new GraphQLScalarType({
       }
     }
     return undefined;
-  }
-})
+  },
+});

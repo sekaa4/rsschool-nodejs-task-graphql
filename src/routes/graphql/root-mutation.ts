@@ -1,9 +1,22 @@
 import { PrismaClient } from '@prisma/client';
-import { GraphQLBoolean, GraphQLFloat, GraphQLInt, GraphQLObjectType, GraphQLString } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+} from 'graphql';
 import { PostType } from './posts/post.js';
 import { ProfileType } from './profiles/profile.js';
 import { MemberTypeId } from './types/member-id.js';
-import { BooleanNonNullType, FloatNonNullType, IntNonNullType, MemberIdNonNullType, StringNonNullType, UUIDNonNullType } from './types/non-null.js';
+import {
+  BooleanNonNullType,
+  FloatNonNullType,
+  IntNonNullType,
+  MemberIdNonNullType,
+  StringNonNullType,
+  UUIDNonNullType,
+} from './types/non-null.js';
 import { Void } from './types/void.js';
 import { UserType } from './users/user.js';
 
@@ -76,9 +89,6 @@ export const RootMutationType = new GraphQLObjectType({
       },
 
       async resolve(root, args: UpdatePost) {
-        // const newPost = await prisma.post.create({
-        //   data: args,
-        // });
         const updatePost = prisma.post.update({
           where: { id: args.id },
           data: args,
@@ -91,7 +101,7 @@ export const RootMutationType = new GraphQLObjectType({
     deletePost: {
       type: Void,
       args: {
-        id: { type: UUIDNonNullType }
+        id: { type: UUIDNonNullType },
       },
       async resolve(root, args: { id: string }) {
         const res = await prisma.post.delete({
@@ -101,12 +111,8 @@ export const RootMutationType = new GraphQLObjectType({
         });
 
         console.log('DELETE', res);
-      }
+      },
     },
-
-
-
-
 
     createProfile: {
       type: ProfileType,
@@ -148,7 +154,7 @@ export const RootMutationType = new GraphQLObjectType({
     deleteProfile: {
       type: Void,
       args: {
-        id: { type: UUIDNonNullType }
+        id: { type: UUIDNonNullType },
       },
       async resolve(root, args: { id: string }) {
         const res = await prisma.profile.delete({
@@ -158,11 +164,8 @@ export const RootMutationType = new GraphQLObjectType({
         });
 
         console.log('DELETE', res);
-      }
+      },
     },
-
-
-
 
     createUser: {
       type: UserType,
@@ -201,7 +204,7 @@ export const RootMutationType = new GraphQLObjectType({
     deleteUser: {
       type: Void,
       args: {
-        id: { type: UUIDNonNullType }
+        id: { type: UUIDNonNullType },
       },
       async resolve(root, args: { id: string }) {
         const res = await prisma.user.delete({
@@ -211,7 +214,7 @@ export const RootMutationType = new GraphQLObjectType({
         });
 
         console.log('DELETE', res);
-      }
+      },
     },
   }),
 });

@@ -1,5 +1,5 @@
-import { GraphQLString, GraphQLObjectType } from "graphql";
-import { UUIDType } from "../types/uuid.js";
+import { GraphQLString, GraphQLObjectType } from 'graphql';
+import { UUIDType } from '../types/uuid.js';
 
 const postTypeFields = {
   id: { type: UUIDType },

@@ -1,17 +1,17 @@
-import { GraphQLScalarType } from 'graphql'
+import { GraphQLScalarType } from 'graphql';
 
 export const Void = new GraphQLScalarType({
   name: 'Void',
 
   serialize() {
-    return null
+    return null;
   },
 
   parseValue() {
-    return null
+    return null;
   },
 
   parseLiteral() {
-    return null
-  }
-})
+    return null;
+  },
+});

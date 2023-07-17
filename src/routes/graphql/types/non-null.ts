@@ -1,4 +1,10 @@
-import { GraphQLBoolean, GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLString } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLString,
+} from 'graphql';
 import { PostType } from '../posts/post.js';
 import { MemberTypeId } from './member-id.js';
 
