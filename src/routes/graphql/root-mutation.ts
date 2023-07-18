@@ -1,20 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLInt,
-  GraphQLObjectType,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLObjectType } from 'graphql';
 import { PostType } from './posts/post.js';
 import { ProfileType } from './profiles/profile.js';
-import { MemberTypeId } from './types/member-id.js';
 import {
-  BooleanNonNullType,
-  FloatNonNullType,
-  IntNonNullType,
-  MemberIdNonNullType,
-  StringNonNullType,
+  ChangePostInputNonNullType,
+  ChangeProfileInputNonNullType,
+  ChangeUserInputNonNullType,
+  CreatePostInputNonNullType,
+  CreateProfileInputNonNullType,
+  CreateUserInputNonNullType,
   UUIDNonNullType,
 } from './types/non-null.js';
 import { Void } from './types/void.js';
@@ -23,40 +17,57 @@ import { UserType } from './users/user.js';
 const prisma = new PrismaClient();
 
 interface CreatePost {
-  title: string;
-  content: string;
-  authorId: string;
+  dto: {
+    title: string;
+    content: string;
+    authorId: string;
+  };
 }
 
-interface UpdatePost {
-  title: string;
-  content: string;
+interface ChangePost {
   id: string;
+  dto: {
+    title: string;
+    content: string;
+  };
 }
 
 interface CreateProfile {
-  isMale: boolean;
-  yearOfBirth: number;
-  memberTypeId: string;
-  userId: string;
+  dto: {
+    isMale: boolean;
+    yearOfBirth: number;
+    memberTypeId: string;
+    userId: string;
+  };
 }
 
-interface UpdateProfile {
+interface ChangeProfile {
   id: string;
-  isMale: boolean;
-  yearOfBirth: number;
-  memberTypeId: string;
+  dto: {
+    isMale: boolean;
+    yearOfBirth: number;
+    memberTypeId: string;
+  };
 }
 
 interface CreateUser {
-  name: string;
-  balance: number;
+  dto: {
+    name: string;
+    balance: number;
+  };
 }
 
-interface UpdateUser {
+interface ChangeUser {
   id: string;
-  name: string;
-  balance: number;
+  dto: {
+    name: string;
+    balance: number;
+  };
+}
+
+interface UserSubscribedTo {
+  userId: string;
+  authorId: string;
 }
 
 export const RootMutationType = new GraphQLObjectType({
@@ -66,32 +77,31 @@ export const RootMutationType = new GraphQLObjectType({
     createPost: {
       type: PostType,
       args: {
-        title: { type: StringNonNullType },
-        content: { type: StringNonNullType },
-        authorId: { type: UUIDNonNullType },
+        dto: {
+          type: CreatePostInputNonNullType,
+        },
       },
 
       async resolve(root, args: CreatePost) {
         const newPost = await prisma.post.create({
-          data: args,
+          data: args.dto,
         });
 
         return newPost;
       },
     },
 
-    updatePost: {
+    changePost: {
       type: PostType,
       args: {
-        title: { type: GraphQLString },
-        content: { type: GraphQLString },
         id: { type: UUIDNonNullType },
+        dto: { type: ChangePostInputNonNullType },
       },
 
-      async resolve(root, args: UpdatePost) {
+      async resolve(root, { id, dto }: ChangePost) {
         const updatePost = prisma.post.update({
-          where: { id: args.id },
-          data: args,
+          where: { id },
+          data: dto,
         });
 
         return updatePost;
@@ -104,50 +114,47 @@ export const RootMutationType = new GraphQLObjectType({
         id: { type: UUIDNonNullType },
       },
       async resolve(root, args: { id: string }) {
-        const res = await prisma.post.delete({
+        await prisma.post.delete({
           where: {
             id: args.id,
           },
         });
-
-        console.log('DELETE', res);
       },
     },
 
     createProfile: {
       type: ProfileType,
       args: {
-        isMale: { type: BooleanNonNullType },
-        yearOfBirth: { type: IntNonNullType },
-        memberTypeId: { type: MemberIdNonNullType },
-        userId: { type: UUIDNonNullType },
+        dto: {
+          type: CreateProfileInputNonNullType,
+        },
       },
 
       async resolve(root, args: CreateProfile) {
         const newProfile = await prisma.profile.create({
-          data: args,
+          data: args.dto,
         });
 
         return newProfile;
       },
     },
 
-    updateProfile: {
+    changeProfile: {
       type: ProfileType,
       args: {
         id: { type: UUIDNonNullType },
-        isMale: { type: GraphQLBoolean },
-        yearOfBirth: { type: GraphQLInt },
-        memberTypeId: { type: MemberTypeId },
+        dto: {
+          type: ChangeProfileInputNonNullType,
+        },
       },
 
-      async resolve(root, args: UpdateProfile) {
-        const updateProfile = prisma.profile.update({
+      async resolve(root, args: ChangeProfile) {
+        const changeProfile = prisma.profile.update({
           where: { id: args.id },
-          data: args,
+          data: args.dto,
         });
 
-        return updateProfile;
+        return changeProfile;
       },
     },
 
@@ -157,44 +164,44 @@ export const RootMutationType = new GraphQLObjectType({
         id: { type: UUIDNonNullType },
       },
       async resolve(root, args: { id: string }) {
-        const res = await prisma.profile.delete({
+        await prisma.profile.delete({
           where: {
             id: args.id,
           },
         });
-
-        console.log('DELETE', res);
       },
     },
 
     createUser: {
       type: UserType,
       args: {
-        name: { type: StringNonNullType },
-        balance: { type: FloatNonNullType },
+        dto: {
+          type: CreateUserInputNonNullType,
+        },
       },
 
       async resolve(root, args: CreateUser) {
         const newUser = await prisma.user.create({
-          data: args,
+          data: args.dto,
         });
 
         return newUser;
       },
     },
 
-    updateUser: {
+    changeUser: {
       type: UserType,
       args: {
         id: { type: UUIDNonNullType },
-        name: { type: GraphQLString },
-        balance: { type: GraphQLFloat },
+        dto: {
+          type: ChangeUserInputNonNullType,
+        },
       },
 
-      async resolve(root, args: UpdateUser) {
+      async resolve(root, args: ChangeUser) {
         const updateUser = prisma.user.update({
           where: { id: args.id },
-          data: args,
+          data: args.dto,
         });
 
         return updateUser;
@@ -207,13 +214,59 @@ export const RootMutationType = new GraphQLObjectType({
         id: { type: UUIDNonNullType },
       },
       async resolve(root, args: { id: string }) {
-        const res = await prisma.user.delete({
+        await prisma.user.delete({
           where: {
             id: args.id,
           },
         });
+      },
+    },
 
-        console.log('DELETE', res);
+    subscribeTo: {
+      type: UserType,
+      args: {
+        userId: {
+          type: UUIDNonNullType,
+        },
+        authorId: {
+          type: UUIDNonNullType,
+        },
+      },
+      async resolve(root, args: UserSubscribedTo) {
+        return await prisma.user.update({
+          where: {
+            id: args.userId,
+          },
+          data: {
+            userSubscribedTo: {
+              create: {
+                authorId: args.authorId,
+              },
+            },
+          },
+        });
+      },
+    },
+
+    unsubscribeFrom: {
+      type: Void,
+      args: {
+        userId: {
+          type: UUIDNonNullType,
+        },
+        authorId: {
+          type: UUIDNonNullType,
+        },
+      },
+      async resolve(root, args: UserSubscribedTo) {
+        await prisma.subscribersOnAuthors.delete({
+          where: {
+            subscriberId_authorId: {
+              subscriberId: args.userId,
+              authorId: args.authorId,
+            },
+          },
+        });
       },
     },
   }),

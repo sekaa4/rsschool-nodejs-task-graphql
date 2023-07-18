@@ -23,7 +23,7 @@ export const RootQueryType = new GraphQLObjectType({
 
       resolve: async () => {
         const posts = await prisma.post.findMany();
-        // console.log('posts: ', posts);
+
         return posts;
       },
     },
@@ -32,21 +32,11 @@ export const RootQueryType = new GraphQLObjectType({
       args: { id: { type: UUIDNonNullType } },
 
       resolve: async (root, args: { id: string }) => {
-        console.log('PARENT: ', root);
-        console.log('ID: ', args);
-
         const post = await prisma.post.findUnique({
           where: {
             id: args.id,
           },
         });
-        console.log('POST: ', post);
-        // if (post === null) {
-        //   throw new GraphQLError('Not found');
-        // }
-        // if (post === null) {
-        //   throw httpErrors.notFound();
-        // }
         return post;
       },
     },
