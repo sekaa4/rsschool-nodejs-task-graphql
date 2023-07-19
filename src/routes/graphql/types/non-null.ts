@@ -12,7 +12,7 @@ import {
   CreateProfileInputType,
 } from '../profiles/input-profile.js';
 import { ChangeUserInputType, CreateUserInputType } from '../users/input-user.js';
-import { MemberTypeId } from './member-id.js';
+import { MemberTypeId } from './member-id-enum.js';
 
 import { UUIDType } from './uuid.js';
 

@@ -1,5 +1,6 @@
 import { GraphQLBoolean, GraphQLInputObjectType, GraphQLInt } from 'graphql';
-import { MemberTypeId } from '../types/member-id.js';
+import { MemberTypeId } from '../types/member-id-enum.js';
+
 import {
   BooleanNonNullType,
   IntNonNullType,

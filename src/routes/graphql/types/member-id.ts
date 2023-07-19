@@ -5,8 +5,8 @@ export type MemberID = 'business' | 'basic';
 const isMemberID = (value: unknown): value is MemberID =>
   value === 'business' || value === 'basic';
 
-export const MemberTypeId = new GraphQLScalarType({
-  name: 'MemberTypeId',
+export const MemberType = new GraphQLScalarType({
+  name: 'MemberTypeIdScalar',
 
   serialize(value) {
     if (!isMemberID(value)) {

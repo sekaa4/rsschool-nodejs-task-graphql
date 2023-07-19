@@ -1,5 +1,5 @@
 import { GraphQLFloat, GraphQLInt, GraphQLObjectType } from 'graphql';
-import { MemberTypeId } from '../types/member-id.js';
+import { MemberTypeId } from '../types/member-id-enum.js';
 
 const memberTypeFields = {
   id: { type: MemberTypeId },

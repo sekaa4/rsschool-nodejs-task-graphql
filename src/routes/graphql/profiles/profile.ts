@@ -1,7 +1,7 @@
 import { GraphQLBoolean, GraphQLInt, GraphQLObjectType } from 'graphql';
 import { MemberType } from '../member-types/member.js';
 import { Context } from '../types/ctx.type.js';
-import { MemberTypeId } from '../types/member-id.js';
+import { MemberTypeId } from '../types/member-id-enum.js';
 import { UUIDType } from '../types/uuid.js';
 
 const profileTypeFields = {
