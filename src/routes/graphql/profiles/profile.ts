@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { GraphQLBoolean, GraphQLInt, GraphQLObjectType } from 'graphql';
 import { MemberType } from '../member-types/member.js';
+import { Context } from '../types/ctx.type.js';
 import { MemberTypeId } from '../types/member-id.js';
 import { UUIDType } from '../types/uuid.js';
-
-const prisma = new PrismaClient();
 
 const profileTypeFields = {
   id: { type: UUIDType },
@@ -14,7 +12,9 @@ const profileTypeFields = {
   memberTypeId: { type: MemberTypeId },
   memberType: {
     type: MemberType,
-    async resolve(root: { memberTypeId: string }) {
+    async resolve(root: { memberTypeId: string }, args, ctx: Context) {
+      const { prisma } = ctx;
+
       const memberType = await prisma.memberType.findUnique({
         where: {
           id: root.memberTypeId,

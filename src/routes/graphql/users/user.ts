@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client';
 import { GraphQLString, GraphQLObjectType, GraphQLList } from 'graphql';
 import { PostListType } from '../posts/posts.js';
 import { ProfileType } from '../profiles/profile.js';
+import { Context } from '../types/ctx.type.js';
 import { UUIDType } from '../types/uuid.js';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 export const UserType: GraphQLObjectType = new GraphQLObjectType({
   name: 'User',
@@ -15,7 +15,9 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     balance: { type: GraphQLString },
     profile: {
       type: ProfileType,
-      async resolve(root: { id: string }) {
+      async resolve(root: { id: string }, args, ctx: Context) {
+        const { prisma } = ctx;
+
         const profile = await prisma.profile.findUnique({
           where: {
             userId: root.id,
@@ -27,7 +29,9 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     },
     posts: {
       type: PostListType,
-      async resolve(root: { id: string }) {
+      async resolve(root: { id: string }, args, ctx: Context) {
+        const { prisma } = ctx;
+
         const post = await prisma.post.findMany({
           where: {
             authorId: root.id,
@@ -40,7 +44,9 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
 
     userSubscribedTo: {
       type: new GraphQLList(UserType),
-      async resolve(root: { id: string }) {
+      async resolve(root: { id: string }, args, ctx: Context) {
+        const { prisma } = ctx;
+
         const subscribedToUser = await prisma.user.findMany({
           where: {
             subscribedToUser: {
@@ -56,7 +62,9 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     },
     subscribedToUser: {
       type: new GraphQLList(UserType),
-      async resolve(root: { id: string }) {
+      async resolve(root: { id: string }, args, ctx: Context) {
+        const { prisma } = ctx;
+
         const userSubscribedTo = await prisma.user.findMany({
           where: {
             userSubscribedTo: {
