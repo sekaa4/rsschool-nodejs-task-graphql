@@ -5,4 +5,5 @@ import DataLoader from "dataloader";
 export interface Context {
   prisma: PrismaClient<Prisma.PrismaClientOptions, never, Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined, DefaultArgs>;
   loaders: WeakMap<object, DataLoader<string, unknown>>;
+  dataUsers?: Record<string, unknown>[]
 }

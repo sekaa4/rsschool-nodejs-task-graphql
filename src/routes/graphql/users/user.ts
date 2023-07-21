@@ -79,8 +79,15 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
     userSubscribedTo: {
       type: new GraphQLList(UserType),
       async resolve(root: { id: string }, args, ctx: Context, info) {
-        const { prisma, loaders } = ctx;
+        const { prisma, loaders, dataUsers } = ctx;
 
+        if (dataUsers) {
+          const user = dataUsers.find(user => user.id === root.id);
+
+          return user && user.userSubscribedTo;
+        }
+
+        //universal resolve the results
         let loader = loaders.get(info.fieldNodes);
 
         if (!loader) {
@@ -110,16 +117,36 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
           loaders.set(info.fieldNodes, loader);
         }
 
-        const subscriberToUser = loader.load(root.id)
+        const userSubscribedTo = loader.load(root.id)
 
-        return subscriberToUser;
+
+        //simply resolve the results
+        // const userSubscribedTo = prisma.user.findMany({
+        //   where: {
+        //     subscribedToUser: {
+        //       some: {
+        //         subscriberId: root.id,
+        //       },
+        //     },
+        //   },
+        // });
+
+        return userSubscribedTo;
       },
     },
     subscribedToUser: {
       type: new GraphQLList(UserType),
       async resolve(root: { id: string }, args, ctx: Context, info) {
-        const { prisma, loaders } = ctx;
+        const { prisma, loaders, dataUsers } = ctx;
 
+        if (dataUsers) {
+          // const userId = root.id;
+          const user = dataUsers.find(user => user.id === root.id);
+
+          return user && user.subscribedToUser;
+        }
+
+        //universal resolve the results
         let loader = loaders.get(info.fieldNodes);
 
         if (!loader) {
@@ -149,9 +176,20 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
           loaders.set(info.fieldNodes, loader);
         }
 
-        const subscribedToUserResults = loader.load(root.id)
+        const subscribedToUser = loader.load(root.id)
 
-        return subscribedToUserResults;
+        //simply resolve the results
+        // const subscribedToUser = prisma.user.findMany({
+        //   where: {
+        //     userSubscribedTo: {
+        //       some: {
+        //         authorId: root.id,
+        //       },
+        //     },
+        //   },
+        // });
+
+        return subscribedToUser;
       },
     },
   }),
