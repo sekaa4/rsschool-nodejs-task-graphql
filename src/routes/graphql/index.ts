@@ -5,7 +5,6 @@ import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
 import { rootSchema } from './root-schema.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
-
   const { prisma } = fastify;
 
   fastify.route({
@@ -28,12 +27,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
     async handler(req) {
       const { query, variables } = req.body;
+      const loaders = new WeakMap();
 
       const res = await graphql({
         schema: rootSchema,
         source: query,
         variableValues: variables,
-        contextValue: { prisma },
+        contextValue: { prisma, loaders },
       });
 
       return res;

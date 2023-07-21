@@ -11,10 +11,37 @@ import { UserType } from './users/user.js';
 
 import { UserListType } from './users/users.js';
 
+// import { parseResolveInfo, ResolveTree, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info';
+
 export const RootQueryType = new GraphQLObjectType({
   name: 'Query',
 
   fields: () => ({
+    users: {
+      type: UserListType,
+      async resolve(root, args, ctx: Context) {
+        const { prisma } = ctx;
+
+        return await prisma.user.findMany();
+      },
+    },
+
+    user: {
+      type: UserType,
+      args: { id: { type: UUIDNonNullType } },
+      async resolve(root, args: { id: string }, ctx: Context) {
+        const { prisma } = ctx;
+
+        const user = await prisma.user.findUnique({
+          where: {
+            id: args.id,
+          },
+        });
+
+        return user;
+      },
+    },
+
     posts: {
       type: PostListType,
       args: {},
@@ -95,31 +122,6 @@ export const RootQueryType = new GraphQLObjectType({
         });
 
         return profile;
-      },
-    },
-
-    users: {
-      type: UserListType,
-      async resolve(root, args, ctx: Context) {
-        const { prisma } = ctx;
-
-        return prisma.user.findMany();
-      },
-    },
-
-    user: {
-      type: UserType,
-      args: { id: { type: UUIDNonNullType } },
-      async resolve(root, args: { id: string }, ctx: Context) {
-        const { prisma } = ctx;
-
-        const user = await prisma.user.findUnique({
-          where: {
-            id: args.id,
-          },
-        });
-
-        return user;
       },
     },
   }),
