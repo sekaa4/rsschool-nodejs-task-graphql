@@ -1,13 +1,13 @@
-import { GraphQLEnumType } from "graphql";
+import { GraphQLEnumType } from 'graphql';
 
 export const MemberTypeId = new GraphQLEnumType({
-  name: "MemberTypeId",
+  name: 'MemberTypeId',
   values: {
     basic: {
-      value: 'basic'
+      value: 'basic',
     },
     business: {
-      value: 'business'
-    }
-  }
-})
+      value: 'business',
+    },
+  },
+});

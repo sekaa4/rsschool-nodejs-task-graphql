@@ -11,7 +11,11 @@ import { UserType } from './users/user.js';
 
 import { UserListType } from './users/users.js';
 
-import { parseResolveInfo, ResolveTree, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info';
+import {
+  parseResolveInfo,
+  ResolveTree,
+  simplifyParsedResolveInfoFragmentWithType,
+} from 'graphql-parse-resolve-info';
 
 export const RootQueryType = new GraphQLObjectType({
   name: 'Query',
@@ -25,17 +29,16 @@ export const RootQueryType = new GraphQLObjectType({
 
         const { fields } = simplifyParsedResolveInfoFragmentWithType(
           parsedResolveInfoFragment as ResolveTree,
-          UserListType
+          UserListType,
         );
         const fieldsKeys = Object.keys(fields);
-
 
         const dataUsers = await prisma.user.findMany({
           include: {
             subscribedToUser: fieldsKeys.includes('subscribedToUser'),
             userSubscribedTo: fieldsKeys.includes('userSubscribedTo'),
-          }
-        })
+          },
+        });
 
         ctx.dataUsers = dataUsers;
         return dataUsers;

@@ -24,21 +24,22 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
             const profiles = await prisma.profile.findMany({
               where: {
                 userId: {
-                  in: keys as string[]
+                  in: keys as string[],
                 },
               },
             });
 
-
-            const result = keys.map((key: string) => profiles.find(profile => profile.userId === key));
+            const result = keys.map((key: string) =>
+              profiles.find((profile) => profile.userId === key),
+            );
 
             return result;
-          })
+          });
 
           loaders.set(info.fieldNodes, loader);
         }
 
-        const profile = loader.load(root.id)
+        const profile = loader.load(root.id);
 
         return profile;
       },
@@ -56,21 +57,22 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
             const posts = await prisma.post.findMany({
               where: {
                 authorId: {
-                  in: keys as string[]
+                  in: keys as string[],
                 },
               },
             });
 
-
-            const postsResult = keys.map((key: string) => posts.filter(post => post.authorId === key));
+            const postsResult = keys.map((key: string) =>
+              posts.filter((post) => post.authorId === key),
+            );
 
             return postsResult;
-          })
+          });
 
           loaders.set(info.fieldNodes, loader);
         }
 
-        const post = loader.load(root.id)
+        const post = loader.load(root.id);
 
         return post;
       },
@@ -82,7 +84,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
         const { prisma, loaders, dataUsers } = ctx;
 
         if (dataUsers) {
-          const user = dataUsers.find(user => user.id === root.id);
+          const user = dataUsers.find((user) => user.id === root.id);
 
           return user && user.userSubscribedTo;
         }
@@ -102,23 +104,25 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
                   some: {
                     subscriberId: {
                       in: keys as string[],
-                    }
+                    },
                   },
                 },
               },
             });
 
-
-            const userSubscribedToResults = keys.map((key: string) => subscribersToUser.filter(subscriber => subscriber.subscribedToUser.find((user) => user.subscriberId === key)));
+            const userSubscribedToResults = keys.map((key: string) =>
+              subscribersToUser.filter((subscriber) =>
+                subscriber.subscribedToUser.find((user) => user.subscriberId === key),
+              ),
+            );
 
             return userSubscribedToResults;
-          })
+          });
 
           loaders.set(info.fieldNodes, loader);
         }
 
-        const userSubscribedTo = loader.load(root.id)
-
+        const userSubscribedTo = loader.load(root.id);
 
         //simply resolve the results
         // const userSubscribedTo = prisma.user.findMany({
@@ -141,7 +145,7 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
 
         if (dataUsers) {
           // const userId = root.id;
-          const user = dataUsers.find(user => user.id === root.id);
+          const user = dataUsers.find((user) => user.id === root.id);
 
           return user && user.subscribedToUser;
         }
@@ -161,22 +165,25 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
                   some: {
                     authorId: {
                       in: keys as string[],
-                    }
+                    },
                   },
                 },
               },
             });
 
-
-            const result = keys.map((key: string) => usersSubscribeTo.filter(user => user.userSubscribedTo.find((user) => user.authorId === key)));
+            const result = keys.map((key: string) =>
+              usersSubscribeTo.filter((user) =>
+                user.userSubscribedTo.find((user) => user.authorId === key),
+              ),
+            );
 
             return result;
-          })
+          });
 
           loaders.set(info.fieldNodes, loader);
         }
 
-        const subscribedToUser = loader.load(root.id)
+        const subscribedToUser = loader.load(root.id);
 
         //simply resolve the results
         // const subscribedToUser = prisma.user.findMany({

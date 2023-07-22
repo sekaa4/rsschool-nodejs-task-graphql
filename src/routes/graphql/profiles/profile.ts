@@ -1,5 +1,10 @@
 import DataLoader from 'dataloader';
-import { GraphQLBoolean, GraphQLInt, GraphQLObjectType, GraphQLResolveInfo } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLResolveInfo,
+} from 'graphql';
 import { MemberType } from '../member-types/member.js';
 import { Context } from '../types/ctx.type.js';
 import { MemberTypeId } from '../types/member-id-enum.js';
@@ -13,7 +18,12 @@ const profileTypeFields = {
   memberTypeId: { type: MemberTypeId },
   memberType: {
     type: MemberType,
-    async resolve(root: { memberTypeId: string }, args, ctx: Context, info: GraphQLResolveInfo) {
+    async resolve(
+      root: { memberTypeId: string },
+      args,
+      ctx: Context,
+      info: GraphQLResolveInfo,
+    ) {
       const { prisma, loaders } = ctx;
 
       let loader = loaders.get(info.fieldNodes);
@@ -23,21 +33,22 @@ const profileTypeFields = {
           const members = await prisma.memberType.findMany({
             where: {
               id: {
-                in: keys as string[]
+                in: keys as string[],
               },
             },
           });
 
-
-          const result = keys.map((key: string) => members.find(member => member.id === key));
+          const result = keys.map((key: string) =>
+            members.find((member) => member.id === key),
+          );
 
           return result;
-        })
+        });
 
         loaders.set(info.fieldNodes, loader);
       }
 
-      const post = loader.load(root.memberTypeId)
+      const post = loader.load(root.memberTypeId);
 
       return post;
     },
