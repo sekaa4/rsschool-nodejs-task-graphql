@@ -16,6 +16,7 @@ import {
   ResolveTree,
   simplifyParsedResolveInfoFragmentWithType,
 } from 'graphql-parse-resolve-info';
+import DataLoader from 'dataloader';
 
 export const RootQueryType = new GraphQLObjectType({
   name: 'Query',
@@ -24,24 +25,31 @@ export const RootQueryType = new GraphQLObjectType({
     users: {
       type: UserListType,
       async resolve(root, args, ctx: Context, info) {
-        const { prisma } = ctx;
+        const { prisma, loaders } = ctx;
+        let loader = loaders.get(info.fieldNodes);
         const parsedResolveInfoFragment = parseResolveInfo(info);
-
         const { fields } = simplifyParsedResolveInfoFragmentWithType(
           parsedResolveInfoFragment as ResolveTree,
           UserListType,
         );
-        const fieldsKeys = Object.keys(fields);
+        const fieldsKeys = Object.keys(fields) as readonly string[];
 
-        const dataUsers = await prisma.user.findMany({
-          include: {
-            subscribedToUser: fieldsKeys.includes('subscribedToUser'),
-            userSubscribedTo: fieldsKeys.includes('userSubscribedTo'),
-          },
-        });
-
-        ctx.dataUsers = dataUsers;
-        return dataUsers;
+        if (!loader) {
+          loader = new DataLoader(async (keys) => {
+            const fieldsKeys = keys[0].split(',');
+            const dataUsers = await prisma.user.findMany({
+              include: {
+                subscribedToUser: fieldsKeys.includes('subscribedToUser'),
+                userSubscribedTo: fieldsKeys.includes('userSubscribedTo'),
+              },
+            });
+            return [dataUsers];
+          });
+          loaders.set(fieldsKeys, loader);
+        }
+        const result = loader.load(fieldsKeys.join());
+        ctx.dataUsers = fieldsKeys;
+        return result;
       },
     },
 

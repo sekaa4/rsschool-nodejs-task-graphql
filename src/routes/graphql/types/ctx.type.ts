@@ -10,5 +10,5 @@ export interface Context {
     DefaultArgs
   >;
   loaders: WeakMap<object, DataLoader<string, unknown>>;
-  dataUsers?: Record<string, unknown>[];
+  dataUsers?: readonly string[];
 }

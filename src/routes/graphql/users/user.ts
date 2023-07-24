@@ -83,8 +83,15 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
       async resolve(root: { id: string }, args, ctx: Context, info) {
         const { prisma, loaders, dataUsers } = ctx;
 
-        if (dataUsers) {
-          const user = dataUsers.find((user) => user.id === root.id);
+        if (dataUsers && loaders.has(dataUsers)) {
+          const loader = loaders.get(dataUsers);
+
+          const users = (await loader?.load(dataUsers.join())) as Record<
+            string,
+            unknown
+          >[];
+
+          const user = users.find((user) => user.id === root.id);
 
           return user && user.userSubscribedTo;
         }
@@ -143,9 +150,15 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType({
       async resolve(root: { id: string }, args, ctx: Context, info) {
         const { prisma, loaders, dataUsers } = ctx;
 
-        if (dataUsers) {
-          // const userId = root.id;
-          const user = dataUsers.find((user) => user.id === root.id);
+        if (dataUsers && loaders.has(dataUsers)) {
+          const loader = loaders.get(dataUsers);
+
+          const users = (await loader?.load(dataUsers.join())) as Record<
+            string,
+            unknown
+          >[];
+
+          const user = users.find((user) => user.id === root.id);
 
           return user && user.subscribedToUser;
         }
